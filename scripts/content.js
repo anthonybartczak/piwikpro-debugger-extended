@@ -1,5 +1,8 @@
 const sortSvg =
-  '<button id="ppdbe-sort-button"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrows-sort" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"> <path stroke="none" d="M0 0h24v24H0z" fill="none"/> <path d="M3 9l4 -4l4 4m-4 -4v14" /> <path d="M21 15l-4 4l-4 -4m4 4v-14" /> </svg></button>';
+  '<div class="sort-button-container"><button id="ppdbe-sort-button"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrows-sort" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"> <path stroke="none" d="M0 0h24v24H0z" fill="none"/> <path d="M3 9l4 -4l4 4m-4 -4v14" /> <path d="M21 15l-4 4l-4 -4m4 4v-14" /> </svg></button></div>';
+
+const addCSS = (css) =>
+  (document.head.appendChild(document.createElement("style")).innerHTML = css);
 
 var observer = new MutationObserver(function (mutations, mutationInstance) {
   const ppDebugger = document.querySelector(
@@ -24,6 +27,9 @@ function extensionFunction(ppDebuggerDocument) {
     );
 
     tagHeader.insertAdjacentHTML("beforeend", sortSvg);
+    // addCSS(".sort-button-container { margin-left: 4px}");
+    // addCSS(".size-35 { display: flex; !important}");
+
     const sortButton = ppDebuggerDocument.querySelector("#ppdbe-sort-button");
 
     sortButton.addEventListener("click", function () {
@@ -39,18 +45,18 @@ function extensionFunction(ppDebuggerDocument) {
   }
 }
 
-function sortTags(tagList, ppDebuggerDocument) {
-  const currentTags = checkCurrentTagOrder(tagList);
+function sortTags(tagList) {
+  const currentTags = getCurrentTagArray(tagList);
   sortIndexByTimesFired(currentTags);
   const sortedIndexes = getNewObjectArrayIndexes(currentTags, "index");
-  var newTagsContainer = ppDebuggerDocument.createDocumentFragment();
+  const items = [...tagList.children];
 
-  sortedIndexes.forEach(function (idx) {
-    newTagsContainer.appendChild(tagList.children[idx].cloneNode(true));
-  });
-
-  tagList.innerHTML = null;
-  tagList.appendChild(newTagsContainer);
+  items.sort(
+    (a, b) =>
+      sortedIndexes.indexOf(items.indexOf(a)) -
+      sortedIndexes.indexOf(items.indexOf(b))
+  );
+  items.forEach((it) => tagList.appendChild(it));
 }
 
 function sortIndexByTimesFired(objectArray) {
@@ -65,8 +71,8 @@ function getNewObjectArrayIndexes(objectArray, field) {
   return sortedIndexes;
 }
 
-function checkCurrentTagOrder(tagList) {
-  var tagOrder = [];
+function getCurrentTagArray(tagList) {
+  var tagArray = [];
 
   tagList.querySelectorAll("tr").forEach((tag, index) => {
     var tagTitle = tag.querySelector("td span").getAttribute("title");
@@ -81,7 +87,7 @@ function checkCurrentTagOrder(tagList) {
       title: tagTitle,
       timesFired: tagFired == "Not fired" ? 0 : parseInt(tagFired.split("")[0]),
     };
-    tagOrder.push(tagObject);
+    tagArray.push(tagObject);
   });
-  return tagOrder;
+  return tagArray;
 }
