@@ -1,7 +1,7 @@
 Chromium (e.g. Edge, Chrome) installation:
 
 1. Download the repository
-2. Open your Chrome browser and enter chrome://extensions/ in the search bar.
+2. Open your Chromium browser and enter the extension settings (e.g. edge://extensions/, chrome://extensions/) in the search bar.
 3. Enable the developer mode in the extension settings.
 4. Use Load unpacked to load the extension into your browser.
 5. The addon will activate when using the [**debug mode**](https://help.piwik.pro/support/tag-manager/debug-mode/) of your website with Piwik PRO Tag Manager.
