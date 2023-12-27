@@ -58,16 +58,16 @@ function getCurrentVariableArray(variableList) {
     var variableArray = [];
 
     variableList.querySelectorAll("tr").forEach((variable, index) => {
-      var variableTitle = variable.querySelector("td.size-30.ng-binding").getAttribute("title");
-      if (variableTitle == "") {
-        variableTitle = variable.querySelector("td.size-30.ng-binding").innerText;
-      }
+        var variableTitle = variable.querySelector("td.size-30.ng-binding").getAttribute("title");
+        if (variableTitle == "") {
+            variableTitle = variable.querySelector("td.size-30.ng-binding").innerText;
+        }
 
-      variableObject = {
-        index: index,
-        title: variableTitle,
-      };
-      variableArray.push(variableObject);
+        variableObject = {
+            index: index,
+            title: variableTitle,
+        };
+        variableArray.push(variableObject);
     });
     return variableArray;
-  }
+}

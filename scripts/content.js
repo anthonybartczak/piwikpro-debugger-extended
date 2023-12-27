@@ -1,7 +1,7 @@
 const sortSvg = `<div class="sort-button-container"><button id="ppdbe-sort-button"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrows-sort" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"> <path stroke="none" d="M0 0h24v24H0z" fill="none"/> <path d="M3 9l4 -4l4 4m-4 -4v14" /> <path d="M21 15l-4 4l-4 -4m4 4v-14" /> </svg></button></div>`;
 const searchElement = `<div class="search-input-container"><input type="text" id="ppdbe-search-input" name="member" value=""></div>`;
 
-if(!localStorage.getItem("ppDebuggerExtended")) {
+if (!localStorage.getItem("ppDebuggerExtended")) {
   var ppDebuggerExtended = {
     resized: false,
     resize_width: 0,
@@ -86,54 +86,54 @@ function addExtensionElements(ppDebuggerDocument) {
   }
 
 
-    //init with +200px and create resize links
-    if (readLocalStorageEntry().resized === false) {
-      ppResizeDebug(600);
-    } else {
-      ppResizeDebug(readLocalStorageEntry().resize_width);
-    }
+  //init with +200px and create resize links
+  if (readLocalStorageEntry().resized === false) {
+    ppResizeDebug(700);
+  } else {
+    ppResizeDebug(readLocalStorageEntry().resize_width);
+  }
 
-    if (!document.querySelector("#biggerPreviewLink")) {
-      var dbg = document.querySelector("#seventag_container_debugger");
-      if (!dbg) return;
-      dbg.style.maxWidth = "100%";
-      var plnk = document.createElement('a');
-      plnk.setAttribute('style', 'font-family:arial;font-size:13px;color:#fff;text-decoration:none;position:absolute;right:70px;top:17px');
-      plnk.setAttribute('id', 'biggerPreviewLink');
-      plnk.setAttribute('href', '#');
-      plnk.innerHTML = "&#5130;";
-      plnk.addEventListener('click', function (e) {
-        ppDebugAdd(200);
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
+  if (!document.querySelector("#biggerPreviewLink")) {
+    var dbg = document.querySelector("#seventag_container_debugger");
+    if (!dbg) return;
+    dbg.style.maxWidth = "100%";
+    var plnk = document.createElement('a');
+    plnk.setAttribute('style', 'font-family:arial;font-size:13px;color:#fff;text-decoration:none;position:absolute;right:70px;top:17px');
+    plnk.setAttribute('id', 'biggerPreviewLink');
+    plnk.setAttribute('href', '#');
+    plnk.innerHTML = "&#5130;";
+    plnk.addEventListener('click', function (e) {
+      ppDebugAdd(200);
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    });
+    dbg.appendChild(plnk);
+
+    plnk = document.createElement('a');
+    plnk.setAttribute('style', 'font-family:arial;font-size:13px;color:#fff;text-decoration:none;position:absolute;right:70px;top:30px');
+    plnk.setAttribute('id', 'smallerPreviewLink');
+    plnk.setAttribute('href', '#');
+    plnk.innerHTML = "&#5125;";
+    plnk.addEventListener('click', function (e) {
+      ppDebugAdd(-200);
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    });
+    dbg.appendChild(plnk);
+
+    //create observer for panel div if resized from inside iframe to show or hide resize links
+    var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+    var observer = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
+        if (mutation.type === "attributes") setTimeout(showHideBtns, 1000);
       });
-      dbg.appendChild(plnk);
+    });
+    var config = { attributes: true, childList: false, characterData: false }
+    observer.observe(dbg, config);
 
-      plnk = document.createElement('a');
-      plnk.setAttribute('style', 'font-family:arial;font-size:13px;color:#fff;text-decoration:none;position:absolute;right:70px;top:30px');
-      plnk.setAttribute('id', 'smallerPreviewLink');
-      plnk.setAttribute('href', '#');
-      plnk.innerHTML = "&#5125;";
-      plnk.addEventListener('click', function (e) {
-        ppDebugAdd(-200);
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      });
-      dbg.appendChild(plnk);
-
-      //create observer for panel div if resized from inside iframe to show or hide resize links
-      var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-      var observer = new MutationObserver(function (mutations) {
-        mutations.forEach(function (mutation) {
-          if (mutation.type === "attributes") setTimeout(showHideBtns, 1000);
-        });
-      });
-      var config = { attributes: true, childList: false, characterData: false }
-      observer.observe(dbg, config);
-
-    }
+  }
 }
 
 function sortTags(tagList) {
@@ -193,17 +193,17 @@ function updateVariableElements(ppDebugger) {
 
   var liElement = ppDebugger.querySelector('li[ng-class="{active: $state.includes(\'events-log.details.variables\')}"]');
   if (liElement && liElement.classList.contains('active')) {
-      var section = ppDebugger.getElementById('event-details-variables');
-      if (section) {
-          var tds = section.querySelectorAll('td[title]');
-          tds.forEach(function(td) {
-              if (td.getAttribute('title').trim() !== '') {
-                  td.innerText = td.getAttribute('title');
-              }
-          });
-      }
+    var section = ppDebugger.getElementById('event-details-variables');
+    if (section) {
+      var tds = section.querySelectorAll('td[title]');
+      tds.forEach(function (td) {
+        if (td.getAttribute('title').trim() !== '') {
+          td.innerText = td.getAttribute('title');
+        }
+      });
+    }
   } else {
-      // Perform any cleanup if the liElement is not found or not active
+    // Perform any cleanup if the liElement is not found or not active
   }
 }
 
