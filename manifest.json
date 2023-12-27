@@ -10,9 +10,10 @@
         "128": "images/icon-128.png"
     },
     "content_scripts": [{
-        "js": ["scripts/content.js"],
+        "js": ["scripts/content.js", "scripts/helpers.js"],
         "matches": ["https://*/*"]
     }],
+    "permissions": ["storage"],
     "browser_specific_settings": {
         "gecko": {
             "id": "{378b025a-d5e7-4f8a-b2b7-5fe38e28c48b}",
