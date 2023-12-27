@@ -85,12 +85,14 @@ function addExtensionElements(ppDebuggerDocument) {
     });
   }
 
-
-  //init with +200px and create resize links
   if (readLocalStorageEntry().resized === false) {
     ppResizeDebug(700);
   } else {
-    ppResizeDebug(readLocalStorageEntry().resize_width);
+    if (readLocalStorageEntry().resize_width < 400) {
+      ppResizeDebug(400);
+    } else {
+      ppResizeDebug(readLocalStorageEntry().resize_width);
+    }
   }
 
   if (!document.querySelector("#biggerPreviewLink")) {
