@@ -31,3 +31,43 @@ function debounce(callBack, delay = 500) {
         }, delay);
     };
 }
+
+function getCurrentTagArray(tagList) {
+    var tagArray = [];
+
+    tagList.querySelectorAll("tr").forEach((tag, index) => {
+        var tagTitle = tag.querySelector("td span").getAttribute("title");
+        if (tagTitle == "") {
+            tagTitle = tag.querySelector("span").innerText;
+        }
+
+        var tagFired = tag.querySelector("td div span").innerText;
+
+        tagObject = {
+            index: index,
+            title: tagTitle,
+            timesFired: tagFired == "Not fired" ? 0 : parseInt(tagFired.split("")[0]),
+        };
+        tagArray.push(tagObject);
+    });
+    return tagArray;
+}
+
+
+function getCurrentVariableArray(variableList) {
+    var variableArray = [];
+
+    variableList.querySelectorAll("tr").forEach((variable, index) => {
+      var variableTitle = variable.querySelector("td.size-30.ng-binding").getAttribute("title");
+      if (variableTitle == "") {
+        variableTitle = variable.querySelector("td.size-30.ng-binding").innerText;
+      }
+
+      variableObject = {
+        index: index,
+        title: variableTitle,
+      };
+      variableArray.push(variableObject);
+    });
+    return variableArray;
+  }

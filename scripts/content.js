@@ -1,7 +1,6 @@
 const sortSvg = `<div class="sort-button-container"><button id="ppdbe-sort-button"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrows-sort" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"> <path stroke="none" d="M0 0h24v24H0z" fill="none"/> <path d="M3 9l4 -4l4 4m-4 -4v14" /> <path d="M21 15l-4 4l-4 -4m4 4v-14" /> </svg></button></div>`;
 const searchElement = `<div class="search-input-container"><input type="text" id="ppdbe-search-input" name="member" value=""></div>`;
 
-
 if(!localStorage.getItem("ppDebuggerExtended")) {
   var ppDebuggerExtended = {
     resized: false,
@@ -18,30 +17,27 @@ var observerConfig = {
   subtree: true,
 };
 
-var debuggerContainerObserver = new MutationObserver(function (mutations, mutationInstance) {
-  const ppDebugger = document.querySelector(
-    "#seventag_container_debugger iframe"
-  )?.contentDocument;
+const debuggerIframe = document.querySelector(
+  "#seventag_container_debugger iframe"
+)?.contentDocument;
 
-  if (ppDebugger?.querySelector("#overview-container section table")) {
-    if (!ppDebugger.querySelector("#ppdbe-sort-button")) {
-      addExtensionElements(ppDebugger);
+var debuggerContainerObserver = new MutationObserver(function (mutations, mutationInstance) {
+
+  if (debuggerIframe?.querySelector("#overview-container section table")) {
+    if (!debuggerIframe.querySelector("#ppdbe-sort-button")) {
+      addExtensionElements(debuggerIframe);
     }
   }
-});
 
-var variableListObserver = new MutationObserver(function(mutations) {
-  const ppDebugger = document.querySelector(
-    "#seventag_container_debugger iframe"
-  )?.contentDocument;
-
-  if (ppDebugger?.querySelector('li[ng-class="{active: $state.includes(\'events-log.details.variables\')}"]')) {
-    updateTdElements(ppDebugger);
+  if (debuggerIframe?.querySelector('li[ng-class="{active: $state.includes(\'events-log.details.variables\')}"]')) {
+    if (!debuggerIframe.querySelector("#ppdbe-search-input")) {
+      updateVariableElements(debuggerIframe);
+    }
   }
+
 });
 
 debuggerContainerObserver.observe(document, observerConfig);
-variableListObserver.observe(document, observerConfig);
 
 function addExtensionElements(ppDebuggerDocument) {
 
@@ -60,16 +56,16 @@ function addExtensionElements(ppDebuggerDocument) {
     );
 
     // Add the sorting HTML element and connect the sorting function
-    tagFiredHeader.insertAdjacentHTML("beforeend", sortSvg);
+    tagFiredHeader?.insertAdjacentHTML("beforeend", sortSvg);
     // addCSS(".sort-button-container { margin-left: 4px}");
     // addCSS(".size-35 { display: flex; !important}");
     const sortButton = ppDebuggerDocument.querySelector("#ppdbe-sort-button");
-    sortButton.addEventListener("click", function () {
+    sortButton?.addEventListener("click", function () {
       sortTags(tagList, ppDebuggerDocument);
     });
 
     // Add the search HTML element and connect the filter function
-    tagNameHeader.insertAdjacentHTML("beforeend", searchElement);
+    tagNameHeader?.insertAdjacentHTML("beforeend", searchElement);
     const searchInput = ppDebuggerDocument.querySelector("#ppdbe-search-input");
 
     const sendDebouncedInput = debounce((text) => {
@@ -84,7 +80,7 @@ function addExtensionElements(ppDebuggerDocument) {
       });
     });
 
-    searchInput.addEventListener("input", (event) => {
+    searchInput?.addEventListener("input", (event) => {
       sendDebouncedInput(event.target.value);
     });
   }
@@ -166,28 +162,35 @@ function getNewObjectArrayIndexes(objectArray, field) {
   return sortedIndexes;
 }
 
-function getCurrentTagArray(tagList) {
-  var tagArray = [];
+function updateVariableElements(ppDebugger) {
 
-  tagList.querySelectorAll("tr").forEach((tag, index) => {
-    var tagTitle = tag.querySelector("td span").getAttribute("title");
-    if (tagTitle == "") {
-      tagTitle = tag.querySelector("span").innerText;
-    }
+  const variableNameHeader = ppDebugger.querySelector(
+    "#event-details > div.ng-scope section table thead tr th.size-30"
+  );
 
-    var tagFired = tag.querySelector("td div span").innerText;
+  const variableList = ppDebugger.querySelector(
+    "#event-details-variables > table > tbody"
+  );
 
-    tagObject = {
-      index: index,
-      title: tagTitle,
-      timesFired: tagFired == "Not fired" ? 0 : parseInt(tagFired.split("")[0]),
-    };
-    tagArray.push(tagObject);
+  variableNameHeader?.insertAdjacentHTML("beforeend", searchElement);
+  const searchInput = ppDebugger.querySelector("#ppdbe-search-input");
+
+  const sendDebouncedInput = debounce((text) => {
+    const variableArray = getCurrentVariableArray(variableList);
+    const items = [...variableList.children];
+    variableArray.forEach((variable, index) => {
+      if (variable.title.toLowerCase().includes(text.toLowerCase())) {
+        items[index].style.display = "table-row";
+      } else {
+        items[index].style.display = "none";
+      }
+    });
   });
-  return tagArray;
-}
 
-function updateTdElements(ppDebugger) {
+  searchInput?.addEventListener("input", (event) => {
+    sendDebouncedInput(event.target.value);
+  });
+
   var liElement = ppDebugger.querySelector('li[ng-class="{active: $state.includes(\'events-log.details.variables\')}"]');
   if (liElement && liElement.classList.contains('active')) {
       var section = ppDebugger.getElementById('event-details-variables');
